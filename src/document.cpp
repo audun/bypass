@@ -28,15 +28,15 @@ namespace Bypass {
 
 	}
 
-	void Document::append(const Element& element) {
-		elements.push_back(Element(element));
+	void Document::append(element_ptr el) {
+		elements.push_back(el);
 	}
 
 	size_t Document::size() {
 		return elements.size();
 	}
 
-	Element Document::operator[](size_t i) {
+	element_ptr Document::operator[](size_t i) {
 		return elements[i];
 	}
 

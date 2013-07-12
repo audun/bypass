@@ -31,7 +31,7 @@
     const char *mstr = [markdown cStringUsingEncoding:NSUTF8StringEncoding];
     
     Bypass::Parser parser = Bypass::Parser();
-    Document doc = parser.parse(mstr);
+    document_ptr doc = parser.parse(mstr);
     BPDocument *document = [[BPDocument alloc] initWithDocument:doc];
     
     return document;

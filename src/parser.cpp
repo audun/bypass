@@ -86,8 +86,8 @@ namespace Bypass {
 
 	}
 
-	Document Parser::parse(const char* mkd) {
-		document = Document();
+	document_ptr Parser::parse(const char *mkd) {
+    document_ptr document(new Document());
 
 		if (mkd) {
 			struct buf *ib, *ob;
@@ -102,8 +102,8 @@ namespace Bypass {
 			//parse and assemble document
 			markdown(ob, ib, &mkd_callbacks);
 
-			for (std::map<int, Element>::iterator it = elementSoup.begin(); it != elementSoup.end(); ++it) {
-				document.append(it->second);
+			for (std::map<int, element_ptr>::iterator it = elementSoup.begin(); it != elementSoup.end(); ++it) {
+				document->append(it->second);
 			}
 
 			bufrelease(ib);
@@ -113,15 +113,15 @@ namespace Bypass {
 		return document;
 	}
 
-	Document Parser::parse(const string& markdown) {
+	document_ptr Parser::parse(const std::string &markdown) {
 		return parse(markdown.c_str());
 	}
 
 	void Parser::eraseTrailingControlCharacters(const std::string& controlCharacters) {
-		std::map<int, Element>::iterator it = elementSoup.find(elementCount);
+		std::map<int, element_ptr>::iterator it = elementSoup.find(elementCount);
 
 		if ( it != elementSoup.end() ) {
-			Element * element = &((*it).second);
+			element_ptr element = (*it).second;
 
 			if (boost::ends_with(element->text, controlCharacters)) {
 				boost::erase_tail(element->text, controlCharacters.size());
@@ -132,13 +132,13 @@ namespace Bypass {
 	// Block Element Callbacks
 
 	void Parser::handleBlock(Type type, struct buf *ob, struct buf *text, int extra) {
-		Element block;
-		block.setType(type);
+		element_ptr block(new Element());
+		block->setType(type);
 
 		if (type == HEADER) {
 			char levelStr[2];
 			snprintf(levelStr, 2, "%d", extra);
-			block.addAttribute("level", levelStr);
+			block->addAttribute("level", levelStr);
 		}
 
 		std::string textString(text->data, text->data + text->size);
@@ -147,10 +147,10 @@ namespace Bypass {
 
 		for(vector<std::string>::iterator it = strs.begin(); it != strs.end(); it++) {
 			int pos = atoi((*it).c_str());
-			std::map<int, Element>::iterator elit = elementSoup.find(pos);
+			std::map<int, element_ptr>::iterator elit = elementSoup.find(pos);
 
 			if ( elit != elementSoup.end() ) {
-				block.append((*elit).second);
+				block->append((*elit).second);
 				elementSoup.erase(pos);
 			}
 		}
@@ -208,20 +208,20 @@ namespace Bypass {
 		}
 		if (strs.size() > 0) {
 			int pos = atoi(strs[0].c_str());
-			std::map<int, Element>::iterator elit = elementSoup.find(pos);
+			std::map<int, element_ptr>::iterator elit = elementSoup.find(pos);
 
-			Element element = elit->second;
-			element.setType(type);
+			element_ptr element = elit->second;
+			element->setType(type);
 
 			if (extra != NULL && extra->size) {
-				if (element.getType() == LINK) {
-					element.addAttribute("link", std::string(extra->data, extra->data + extra->size));
+				if (element->getType() == LINK) {
+					element->addAttribute("link", std::string(extra->data, extra->data + extra->size));
 				}
 			}
 
 			if (extra2 != NULL && extra2->size) {
-				if (element.getType() == LINK) {
-					element.addAttribute("title", std::string(extra2->data, extra2->data + extra2->size));
+				if (element->getType() == LINK) {
+					element->addAttribute("title", std::string(extra2->data, extra2->data + extra2->size));
 				}
 			}
 
@@ -231,14 +231,14 @@ namespace Bypass {
 			bufputs(ob, textString.c_str());
 		}
 		else {
-			Element element;
-			element.setType(type);
+			element_ptr element(new Element());
+			element->setType(type);
 
 			createSpan(element, ob);
 		}
 	}
 
-	void Parser::createSpan(const Element& element, struct buf *ob) {
+	void Parser::createSpan(element_ptr element, struct buf *ob) {
 		elementCount++;
 		std::ostringstream oss;
 		oss << elementCount;
@@ -269,9 +269,9 @@ namespace Bypass {
 
 	int Parser::parsedCodeSpan(struct buf *ob, struct buf *text) {
 		if (text && text->size > 0) {
-			Element codeSpan;
-			codeSpan.setType(CODE_SPAN);
-			codeSpan.text.assign(text->data, text->data + text->size);
+			element_ptr codeSpan(new Element());
+			codeSpan->setType(CODE_SPAN);
+			codeSpan->text.assign(text->data, text->data + text->size);
 			createSpan(codeSpan, ob);
 		}
 		return 1;
@@ -290,9 +290,9 @@ namespace Bypass {
 		// that butts up against a span-level element. This will ignore it.
 
 		if (text && text->size > 0) {
-			Element normalText;
-			normalText.setType(TEXT);
-			normalText.text.assign(text->data, text->data + text->size);
+			element_ptr normalText(new Element());
+			normalText->setType(TEXT);
+			normalText->text.assign(text->data, text->data + text->size);
 			createSpan(normalText, ob);
 		}
 	}

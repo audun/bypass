@@ -24,6 +24,6 @@
 @interface BPElement (Private)
 
 - (id)init;
-- (id)initWithElement:(Bypass::Element)element;
+- (id)initWithElement:(Bypass::element_ptr)element;
 
 @end

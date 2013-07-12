@@ -22,6 +22,7 @@
 #include <map>
 #include <iostream>
 #include <set>
+#include <boost/smart_ptr/shared_ptr.hpp>
 #include "element.h"
 
 namespace Bypass {
@@ -57,6 +58,9 @@ namespace Bypass {
 
 	};
 
+	class Element;
+	typedef boost::shared_ptr<Element> element_ptr;
+
 	class Element {
 	public:
 		typedef std::map<std::string, std::string> AttributeMap;
@@ -76,9 +80,8 @@ namespace Bypass {
 		AttributeMap::iterator attrEnd();
 		size_t attrSize() const;
 
-		void append(const Element& blockElement);
-		Element getChild(size_t i);
-		Element operator[](size_t i);
+		void append(element_ptr);
+		element_ptr operator[](size_t i);
 		void setType(Type type);
 		Type getType();
 		bool isBlockElement();
@@ -87,7 +90,7 @@ namespace Bypass {
 		friend std::ostream& operator<<(std::ostream& out, const Element& element);
 	private:
 		AttributeMap attributes;
-		std::vector<Element> children;
+		std::vector<element_ptr> children;
 		Type type;
 	};
 

@@ -22,17 +22,17 @@
 
 @implementation BPDocument
 {
-    Bypass::Document _document;
+    Bypass::document_ptr _document;
     NSArray         *_elements;
 }
 
 - (id)init
 {
-    Bypass::Document document;
+    Bypass::document_ptr document(new Bypass::Document());
     return [self initWithDocument:document];
 }
 
-- (id)initWithDocument:(Bypass::Document)document
+- (id)initWithDocument:(Bypass::document_ptr)document
 {
     self = [super init];
     
@@ -48,12 +48,12 @@
     using namespace Bypass;
     
     if (_elements == nil) {
-        size_t i, count = _document.size();
+        size_t i, count = _document->size();
         
         NSMutableArray *elements = [NSMutableArray arrayWithCapacity:count];
         
         for (i = 0; i < count; ++i) {
-            Element e = _document[i];
+            element_ptr e = (*_document)[i];
 
             BPElement *ee = [[BPElement alloc] initWithElement:e];
             elements[i] = ee;

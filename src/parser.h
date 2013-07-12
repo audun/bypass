@@ -43,8 +43,8 @@ namespace Bypass {
 		Parser();
 		~Parser();
 
-		Document parse(const char* markdown);
-		Document parse(const std::string &markdown);
+		document_ptr parse(const char *markdown);
+		document_ptr parse(const std::string &markdown);
 
 		// Block Element Callbacks
 
@@ -73,12 +73,11 @@ namespace Bypass {
 		void printBuf(struct buf *b);
 
 	private:
-		Document document;
-		std::map<int, Element> elementSoup;
+		std::map<int, element_ptr> elementSoup;
 		int elementCount;
 		void handleBlock(Type, struct buf *ob, struct buf *text, int extra = -1);
 		void handleSpan(Type, struct buf *ob, struct buf *text, struct buf *extra = NULL, struct buf *extra2 = NULL);
-		void createSpan(const Element&, struct buf *ob);
+		void createSpan(element_ptr, struct buf *ob);
 		void eraseTrailingControlCharacters(const std::string& controlCharacters);
 	};
 

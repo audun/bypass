@@ -27,12 +27,14 @@ namespace Bypass
 	public:
 		Document();
 		~Document();
-		void append(const Element& elements);
-		Element operator[](size_t i);
+		void append(element_ptr);
+		element_ptr operator[](size_t i);
 		size_t size();
 	private:
-		std::vector<Element> elements;
+		std::vector<element_ptr> elements;
 	};
+
+	typedef boost::shared_ptr<Document> document_ptr;
 }
 
 #endif // _BYPASS_DOCUMENT_H_

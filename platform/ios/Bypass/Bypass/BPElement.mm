@@ -53,7 +53,7 @@ const BPElementType BPText           = Bypass::TEXT;
 
 @implementation BPElement
 {
-           Bypass::Element _element;
+           Bypass::element_ptr _element;
            NSString        *_text;
            NSDictionary    *_attributes;
     __weak BPElement       *_parentElement;
@@ -62,16 +62,16 @@ const BPElementType BPText           = Bypass::TEXT;
 
 - (id)init
 {
-    Bypass::Element element;
-    return [self initWithElement:element];
+    Bypass::element_ptr el(new Bypass::Element());
+    return [self initWithElement:el];
 }
 
-- (id)initWithElement:(Bypass::Element)element
+- (id)initWithElement:(Bypass::element_ptr)element
 {
     return [self initWithElement:element parentElement:nil];
 }
 
-- (id)initWithElement:(Bypass::Element)element parentElement:(BPElement *)parentElement
+- (id)initWithElement:(Bypass::element_ptr)element parentElement:(BPElement *)parentElement
 {
     self = [super init];
     
@@ -85,12 +85,12 @@ const BPElementType BPText           = Bypass::TEXT;
 
 - (BPElementType)elementType
 {
-    return _element.getType();
+    return _element->getType();
 }
 
 - (BOOL)isBlockElement
 {
-    return _element.isBlockElement();
+    return _element->isBlockElement();
 }
 
 - (NSString *)text
@@ -98,7 +98,7 @@ const BPElementType BPText           = Bypass::TEXT;
     using namespace std;
     
     if (_text == nil) {
-        string t = _element.getText();
+        string t = _element->getText();
         
         if (t.length() > 0) {
             _text = [NSString stringWithCString:t.c_str() encoding:NSUTF8StringEncoding];
@@ -113,11 +113,11 @@ const BPElementType BPText           = Bypass::TEXT;
     using namespace Bypass;
     
     if (_attributes == nil) {
-        Element::AttributeMap::iterator it = _element.attrBegin();
+        Element::AttributeMap::iterator it = _element->attrBegin();
         NSMutableDictionary *attributes;
-        attributes = [NSMutableDictionary dictionaryWithCapacity:_element.attrSize()];
+        attributes = [NSMutableDictionary dictionaryWithCapacity:_element->attrSize()];
 
-		for (; it != _element.attrEnd(); ++it) {
+		for (; it != _element->attrEnd(); ++it) {
 			if (!it->first.empty() && !it->second.empty()) {
 				NSString *nn = [NSString stringWithUTF8String:it->first.c_str()];
 				NSString *vv = [NSString stringWithUTF8String:it->second.c_str()];
@@ -137,12 +137,12 @@ const BPElementType BPText           = Bypass::TEXT;
     using namespace Bypass;
     
     if (_childElements == nil) {
-        size_t i, count = _element.size();
+        size_t i, count = _element->size();
         
         NSMutableArray *childElements = [NSMutableArray arrayWithCapacity:count];
         
         for (i = 0; i < count; ++i) {
-            Element c = _element[i];
+            element_ptr c = (*_element)[i];
             BPElement *cc = [[BPElement alloc] initWithElement:c parentElement:self];
             childElements[i] = cc;
         }

@@ -25,6 +25,6 @@
 @interface BPDocument (Private)
 
 - (id)init;
-- (id)initWithDocument:(Bypass::Document)document;
+- (id)initWithDocument:(Bypass::document_ptr)document;
 
 @end

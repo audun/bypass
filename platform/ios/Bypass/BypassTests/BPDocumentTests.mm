@@ -13,21 +13,21 @@
 {
     using namespace Bypass;
     
-    Document d;
+    document_ptr d = new Document();
     
     Element e0;
     e0.setType(PARAGRAPH);
     e0.setText("text");
     e0.addAttribute("a", "A");
     e0.addAttribute("b", "B");
-    d.append(e0);
+    d->append(e0);
 
     Element e1;
     e1.setType(PARAGRAPH);
     e1.setText("text");
     e1.addAttribute("a", "A");
     e1.addAttribute("b", "B");
-    d.append(e1);
+    d->append(e1);
     
     document = [[BPDocument alloc] initWithDocument:d];
 }

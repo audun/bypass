@@ -57,11 +57,11 @@ namespace Bypass {
 		return attributes.size();
 	}
 
-	void Element::append(const Element& child) {
-		children.push_back(Element(child));
+	void Element::append(element_ptr child) {
+		children.push_back(child);
 	}
 
-	Element Element::operator[](size_t i) {
+	element_ptr Element::operator[](size_t i) {
 		return children[i];
 	}
 
